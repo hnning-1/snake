@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NEON SNAKE // Play Online</title>
+  <meta name="description" content="Play the ultimate neon-styled Snake game online. Smooth graphics, retro sound effects, multiple difficulty levels, and full mobile support.">
+  <!-- Google Fonts: Outfit and Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-grid"></div>
+  <div class="ambient-glow"></div>
+
+  <div class="app-container">
+    <!-- Header Area -->
+    <header class="game-header">
+      <div class="logo-area">
+        <h1>NEON<span>SNAKE</span></h1>
+        <span class="version-tag">V2.0</span>
+      </div>
+      
+      <div class="scoreboard">
+        <div class="score-card">
+          <span class="label">SCORE</span>
+          <span class="value" id="currentScore">000</span>
+        </div>
+        <div class="score-card highlight">
+          <span class="label">HIGH SCORE</span>
+          <span class="value" id="highScore">000</span>
+        </div>
+        <div class="score-card multiplier" id="comboContainer">
+          <span class="label">COMBO</span>
+          <span class="value" id="comboValue">x1</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-main">
+      <div class="canvas-wrapper">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        
+        <!-- Screen Overlays -->
+        <!-- Start Screen -->
+        <div class="overlay active" id="startScreen">
+          <div class="overlay-content">
+            <h2 class="glitch-text" data-text="NEON SNAKE">NEON SNAKE</h2>
+            <p class="subtitle">Enter the grid. Consume light. Grow infinitely.</p>
+            
+            <div class="menu-sections">
+              <div class="setting-group">
+                <h3>Select Difficulty</h3>
+                <div class="difficulty-selector">
+                  <button class="diff-btn" data-speed="140" data-difficulty="easy">EASY</button>
+                  <button class="diff-btn active" data-speed="90" data-difficulty="medium">MEDIUM</button>
+                  <button class="diff-btn" data-speed="50" data-difficulty="hard">HARD</button>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <h3>Select Theme</h3>
+                <div class="theme-selector">
+                  <button class="theme-btn active" data-theme="cyberpunk" style="--btn-color: #00f0ff;">CYBERPUNK</button>
+                  <button class="theme-btn" data-theme="sunset" style="--btn-color: #ff007f;">SUNSET</button>
+                  <button class="theme-btn" data-theme="matrix" style="--btn-color: #39ff14;">MATRIX</button>
+                </div>
+              </div>
+            </div>
+
+            <button class="primary-btn" id="startBtn">INITIALIZE SYSTEM</button>
+          </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div class="overlay" id="gameOverScreen">
+          <div class="overlay-content">
+            <h2 class="neon-text-red">SYSTEM FAIL</h2>
+            <p class="summary-text">The snake collapsed into itself or the boundary.</p>
+            
+            <div class="stats-summary">
+              <div class="stat-row">
+                <span>Final Score:</span>
+                <span id="finalScore" class="stat-val">0</span>
+              </div>
+              <div class="stat-row">
+                <span>Max Combo:</span>
+                <span id="maxCombo" class="stat-val">x1</span>
+              </div>
+              <div class="stat-row" id="newHighScoreRow">
+                <span class="new-tag">NEW</span>
+                <span>HIGH SCORE ACHIEVED!</span>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="primary-btn" id="restartBtn">REBOOT SYSTEM</button>
+              <button class="secondary-btn" id="menuBtn">MAIN MENU</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pause Screen -->
+        <div class="overlay" id="pauseScreen">
+          <div class="overlay-content">
+            <h2>SYSTEM PAUSED</h2>
+            <p class="subtitle">Grid state frozen.</p>
+            <button class="primary-btn" id="resumeBtn">RESUME SYSTEM</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls and Info -->
+      <aside class="game-sidebar">
+        <!-- System Status/Controls panel -->
+        <div class="panel controls-panel">
+          <h3 class="panel-title">System Console</h3>
+          <div class="controls-info">
+            <div class="info-row">
+              <span class="control-key">↑ ↓ ← →</span>
+              <span class="control-desc">Move Snake</span>
+            </div>
+            <div class="info-row">
+              <span class="control-key">W A S D</span>
+              <span class="control-desc">Alternate Controls</span>
+            </div>
+            <div class="info-row">
+              <span class="control-key">Space</span>
+              <span class="control-desc">Pause / Resume</span>
+            </div>
+          </div>
+          
+          <div class="system-toggles">
+            <button class="icon-toggle" id="audioToggle" title="Toggle Sound">
+              <svg id="speakerIcon" viewBox="0 0 24 24" width="24" height="24">
+                <!-- Sound on by default -->
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+              </svg>
+              <span>SOUND EFFECTS</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Touch Controls (Mobile D-pad) -->
+        <div class="panel dpad-panel" id="mobileDpad">
+          <h3 class="panel-title">Touch Controller</h3>
+          <div class="dpad-grid">
+            <div class="dpad-cell"></div>
+            <button class="dpad-btn up" id="padUp" aria-label="Up">
+              <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+            </button>
+            <div class="dpad-cell"></div>
+            <button class="dpad-btn left" id="padLeft" aria-label="Left">
+              <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+            </button>
+            <button class="dpad-btn action" id="padPause" aria-label="Pause/Action">
+              <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button class="dpad-btn right" id="padRight" aria-label="Right">
+              <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+            </button>
+            <div class="dpad-cell"></div>
+            <button class="dpad-btn down" id="padDown" aria-label="Down">
+              <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+            </button>
+            <div class="dpad-cell"></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="game-footer-text">
+      <p>TOUCH / SWIPE SUPPORTED ON MOBILE DEVICES // DESIGNED BY ANTIGRAVITY</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
